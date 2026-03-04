@@ -1,4 +1,5 @@
 player_data/
+processed.json
 __pycache__/
 *.pyc
 .DS_Store
