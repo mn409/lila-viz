@@ -1,8 +1,17 @@
+# core
 streamlit==1.19.0
+
+# numerical / plotting
+numpy==1.26.4
 pandas==2.0.3
-numpy
-pillow
-scipy
-matplotlib
+matplotlib==3.8.2
+pillow==10.2.0
+scipy==1.11.4
 altair==4.2.2
-pyarrow==14.0.2
+
+# parquet / fast IO (pick a version with wheels for py3.11)
+pyarrow==11.0.0
+
+# ensure build tools are present if pip creates isolated build envs
+setuptools>=68.0.0
+wheel
