@@ -144,12 +144,10 @@ def main():
     # ── Sidebar Filters ──────────────────────────────────────────────────────
     st.sidebar.title("🗺️ Filters")
 
-    # Map selector
     maps = sorted(set(e['map_id'] for e in raw_data))
     default_map_idx = maps.index('AmbroseValley') if 'AmbroseValley' in maps else 0
     selected_map = st.sidebar.selectbox("Map", maps, index=default_map_idx)
 
-    # Date selector
     all_dates = sorted(set(
         e['date'] for e in raw_data if e['map_id'] == selected_map
     ))
@@ -159,7 +157,6 @@ def main():
         st.warning("Please select at least one date.")
         return
 
-    # Match selector
     pre_filtered = [
         e for e in raw_data
         if e['map_id'] == selected_map and e['date'] in selected_dates
@@ -167,12 +164,10 @@ def main():
     matches = sorted(set(e['match_id'] for e in pre_filtered))
     selected_match = st.sidebar.selectbox("Match", ['All Matches'] + matches)
 
-    # Player type toggles
     st.sidebar.markdown("---")
     show_humans = st.sidebar.checkbox("Show Human Players", value=True)
     show_bots = st.sidebar.checkbox("Show Bots", value=True)
 
-    # Event type toggles
     st.sidebar.markdown("---")
     st.sidebar.markdown("**Event Types**")
     show_events = set()
@@ -180,7 +175,6 @@ def main():
         if st.sidebar.checkbox(style['label'], value=True, key=f"ev_{event_type}"):
             show_events.add(event_type)
 
-    # Heatmap selector
     st.sidebar.markdown("---")
     heatmap_mode = st.sidebar.radio(
         "Heatmap Overlay",
@@ -196,6 +190,30 @@ def main():
         show_humans,
         show_bots
     )
+
+    # ── Timeline Slider ──────────────────────────────────────────────────────
+    if selected_match != 'All Matches' and filtered:
+        max_seq = max(e.get('seq', 0) for e in filtered)
+
+        if max_seq > 0:
+            st.markdown("### ⏱️ Match Timeline")
+            col_progress, col_slider = st.columns([1, 5])
+
+            with col_slider:
+                seq_cutoff = st.slider(
+                    "Drag to replay match",
+                    min_value=0,
+                    max_value=int(max_seq),
+                    value=int(max_seq),
+                    label_visibility="collapsed"
+                )
+
+            progress = seq_cutoff / max_seq * 100
+            col_progress.metric("Progress", f"{progress:.0f}%")
+            filtered = [e for e in filtered if e.get('seq', 0) <= seq_cutoff]
+            st.caption(f"Showing {len(filtered):,} of {max_seq+1} events in this match.")
+        else:
+            st.info("⏱️ Timeline: Select a specific match to enable playback.")
 
     # ── Stats Panel ──────────────────────────────────────────────────────────
     st.markdown("### 📊 Match Statistics")
@@ -225,7 +243,6 @@ def main():
     for i, (_, style) in enumerate(EVENT_STYLE.items()):
         cols[i % 4].markdown(style['label'])
 
-    # ── Footer ───────────────────────────────────────────────────────────────
     st.markdown("---")
     st.caption("LILA BLACK Player Journey Visualizer — Built for the Level Design Team")
 

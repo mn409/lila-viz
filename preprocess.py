@@ -83,6 +83,9 @@ def process_all(data_root="player_data"):
     # Clean up match_id (remove .nakama-0 suffix)
     combined['match_id'] = combined['match_id'].str.replace('.nakama-0', '', regex=False)
 
+    # Add sequence number within each match for timeline
+    combined['seq'] = combined.groupby('match_id').cumcount()
+
     print(f"Total events: {len(combined):,}")
     print(f"Maps: {combined['map_id'].value_counts().to_dict()}")
     print(f"Player types: {combined['player_type'].value_counts().to_dict()}")
