@@ -135,7 +135,8 @@ def main():
     st.caption("Built for the Level Design team to explore player behavior across maps.")
 
     try:
-        raw_data = load_data()
+        with st.spinner("Loading match data..."):
+            raw_data = load_data()
     except FileNotFoundError:
         st.error("processed.json not found. Please run preprocess.py first.")
         st.code("python preprocess.py")
