@@ -1,0 +1,6 @@
+pandas
+pyarrow
+streamlit
+matplotlib
+pillow
+scipy
